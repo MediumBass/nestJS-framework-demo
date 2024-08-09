@@ -14,27 +14,29 @@ datasource db {
 }
 
 model User {
-    id String @id @default(uuid())
-    phone String @unique
-    email String @unique
-    password String
-    createdAt DateTime @default(now()) @map("created_at")
-    updateTime DateTime @map("updated_at")
-    roles Role[]
-    token Token[]
-    @@map("users")
+  id        String   @id @default(uuid())
+  phone     String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updateTime DateTime @map("updated_at")
+  roles     Role[]
+  token     Token[]
+
+  @@map("users")
 }
 
+
+model Token {
+  id     String @id @default(uuid())
+  value  String
+  userId String
+  user   User @relation(fields: [userId], references: [id])
+  @@map("tokens")
+}
 enum Role{
   ADMIN
   USER
   VIP
 }
 
-model Token{
-  token String @unique
-  exp DateTime
-  user User    @relation(fields: [userId], references: [id])
-  userId String
-  @@map("tokens")
-}
