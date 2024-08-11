@@ -4,7 +4,7 @@ import {UserService} from "../user/user.service";
 import {Tokens} from "./interfacesToken";
 import {compareSync} from "bcrypt";
 import {JwtService} from "@nestjs/jwt";
-import {Token} from "@prisma/client";
+import {Token, User} from "@prisma/client";
 import {PrismaService} from "@prisma/prisma.service";
 import {v4} from "uuid";
 import {add} from "date-fns";
@@ -25,26 +25,40 @@ export class AuthService {
     async login(dto: LoginDTO):Promise<Tokens>{
         const user = await this.userService.findOne(dto.email).catch( err =>{
             this.logger.error(err)
+            console.log(dto.password,user.password)
             return null
+
         });if(!user || !compareSync(dto.password,user.password)){
+
             throw new UnauthorizedException("Wrong login or password");
         }
-        const accessToken= this.jwtService.sign({
-            id: user.id,
+        return this.generateTokens(user)
+    }
+    private async generateTokens(user: User):Promise<Tokens>{
+        const accessToken="Bearer " + this.jwtService.sign({
             email: user.email,
             roles: user.roles
         })
-        const refreshToken = await this.getRefreshToken(user.id)
+        const refreshToken = await this.getRefreshToken(user.email)
         return {accessToken,refreshToken}
     }
     private async getRefreshToken(userId: string):Promise<Token>{
         return this.prismaService.token.create({
             data:{
-                token: v4(),
+                value: v4(),
                 exp: add(new Date(), {months:1}),
                 userId,
             }
         })
     }
 
+    async refreshTokens(refreshToken: string): Promise<Tokens> {
+        const token = await  this.prismaService.token.findFirst({where:{value:refreshToken }})
+        this.prismaService.token.deleteMany({where:{value:refreshToken }})
+        if(!token){
+            throw new UnauthorizedException();
+        }
+        const user= await this.userService.findOne(token.userId)
+        return this.generateTokens(user)
+    }
 }

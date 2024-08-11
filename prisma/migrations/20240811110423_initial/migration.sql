@@ -19,6 +19,7 @@ CREATE TABLE "tokens" (
     "id" TEXT NOT NULL,
     "value" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "exp" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "tokens_pkey" PRIMARY KEY ("id")
 );

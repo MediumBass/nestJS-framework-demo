@@ -6,11 +6,7 @@ services:
     container_name: lesson
     ports:
       - '5435:5432'
-    environment:
-      - POSTGRES_HOST=localhost
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=12345
-      - POSTGRES_DATABASE=lesson
+    env_file: "../.env"
     command: postgres
     restart: always
 
