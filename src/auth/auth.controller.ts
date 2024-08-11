@@ -5,7 +5,7 @@ import {Tokens} from "./interfacesToken";
 import { Response } from 'express';
 import {ConfigService} from "@nestjs/config";
 import {Cookie} from "@common/common";
-import {IsString} from "class-validator";
+
 
 const REFRESH_TOKEN ="refreshtoken"
 @Controller('auth')

@@ -9,10 +9,6 @@ export class UserController {
     findAll(){
         return this.userService.findAll()
     }
-    @Post("save")
-    CreateUser(@Body() dto){
-        return this.userService.save(dto)
-    }
     @Get("one:idOrEmail")
     FindOneUser(@Param("IdOrEmail") IdOrEmail:string){
         return this.userService.findOne(IdOrEmail)
